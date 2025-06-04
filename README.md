@@ -1,6 +1,6 @@
 # faiss-py
 
-This is a python implementation of [faiss](https://github.com/facebookresearch/faiss) for understanding the implementation of `faiss` without needing to understand C++.
+This is a python implementation of [faiss](https://github.com/facebookresearch/faiss) for understanding the implementation of `faiss` without needing to understand C++. The only dependancy we will allow ourselves is numpy.
 
 From the faiss wiki:
 
