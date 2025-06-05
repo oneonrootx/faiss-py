@@ -5,6 +5,32 @@ from faiss_py.indexflatl2 import IndexFlatL2
 
 
 class Kmeans:
+    """
+    Kmeans clustering class for partitioning data into k clusters.
+
+    This class implements the K-means clustering algorithm using L2 distance.
+    It supports multiple random initializations and can optionally accept initial centroids.
+    After training, the centroids and cluster assignments (labels) are available as attributes,
+    and an IndexFlatL2 index is built over the centroids for efficient nearest-centroid search.
+
+    Attributes
+    ----------
+    d : int
+        Dimensionality of the input vectors.
+    k : int
+        Number of clusters.
+    centroids : np.ndarray or None
+        Array of shape (k, d) with the cluster centroids after training.
+    index : IndexFlatL2 or None
+        IndexFlatL2 built over the centroids for fast nearest-centroid search.
+    labels : np.ndarray or None
+        Array of shape (n_samples,) with the cluster assignment for each input vector after training.
+
+    Methods
+    -------
+    train(x, weights=None, init_centroids=None, niter=100, nrounds=20, seed=None)
+        Trains the K-means model on the input data.
+    """
 
     def __init__(self, d: int, k: int):
         self.d = d
@@ -104,6 +130,3 @@ class Kmeans:
 
 
 
-        
-        
-    
