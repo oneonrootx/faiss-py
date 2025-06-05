@@ -12,7 +12,7 @@ ___
 
 ### Faiss building blocks
 
-- [ ] `Kmeans` - Clustering
+- [x] `Kmeans` - Clustering
 - [ ] `PCAMatrix` - Dimensionality Reduction
 - [ ] `Quantizer` - Quantization
 
