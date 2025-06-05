@@ -50,13 +50,13 @@ def test_indexflatl2_search_knn():
 def test_indexflatl2_empty_add():
     d = 3
     index = IndexFlatL2(d)
-    assert index.vectors.shape == (0, d)
+    assert index.database.shape == (0, d)
     xb = np.random.randn(5, d).astype(np.float32)
     index.add(xb)
-    assert index.vectors.shape == (5, d)
+    assert index.database.shape == (5, d)
     # Add more
     index.add(xb)
-    assert index.vectors.shape == (10, d)
+    assert index.database.shape == (10, d)
 
 def test_indexflatl2_search_single_vector():
     d = 3

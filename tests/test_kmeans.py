@@ -52,7 +52,7 @@ def test_kmeans_index_search():
     assert kmeans_py.index is not None
     assert hasattr(kmeans_py.index, "search")
     # The centroids should be in the index
-    assert kmeans_py.index.vectors.shape == (k, d)
+    assert kmeans_py.index.database.shape == (k, d)
 
     # Now, for each centroid, search for its nearest centroid in the index
     # Should be itself (distance 0)

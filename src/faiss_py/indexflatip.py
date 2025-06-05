@@ -2,12 +2,13 @@ import numpy as np
 
 from faiss_py.core.index import Index
 
-class IndexFlatL2(Index):
+
+class IndexFlatIP(Index):
     """
-    Flat (brute-force) L2 (Euclidean) distance index.
+    Flat (brute-force) Inner Product (dot product) index.
 
     Stores all vectors in a flat numpy array and performs brute-force search
-    for nearest neighbors using L2 distance.
+    for nearest neighbors using inner product similarity.
     """
 
     def __init__(self, d: int):
@@ -34,10 +35,10 @@ class IndexFlatL2(Index):
         Raises
         ------
         NotImplementedError
-            Always, since flat indices do not require training.
+            Always raised, as flat indices are not trainable.
         """
-        raise NotImplementedError("`IndexFlatL2` is not trainable, it's flat")
-
+        raise NotImplementedError("`IndexFlatIP` is not trainable, it's flat")
+    
     def add(self, vectors):
         """
         Add vectors to the index.
@@ -45,27 +46,27 @@ class IndexFlatL2(Index):
         Parameters
         ----------
         vectors : np.ndarray
-            Array of shape (n, d) containing the vectors to add.
+            Vectors to add, shape (n, d).
         """
         self.database = np.concatenate((self.database, vectors), axis=0)
 
     def search(self, query, k: int):
         """
-        Search for the k nearest neighbors of the query vectors.
+        Search the index for the top-k vectors with highest inner product.
 
         Parameters
         ----------
         query : np.ndarray
-            Query vectors of shape (m, d) or (d,).
+            Query vector(s), shape (d,) or (nq, d).
         k : int
             Number of nearest neighbors to return.
 
         Returns
         -------
         D : np.ndarray
-            Array of shape (m, k) with the L2 distances to the nearest neighbors.
+            Inner products of the top-k results, shape (nq, k).
         I : np.ndarray
-            Array of shape (m, k) with the indices of the nearest neighbors.
+            Indices of the top-k results, shape (nq, k).
         """
         k = min(k, len(self.database))
         query = np.asarray(query)
@@ -73,7 +74,6 @@ class IndexFlatL2(Index):
         if query.ndim == 1:
             query = query[None, :]
 
-        diff = self.database[None, :, :] - query[:, None, :] # (1, N, d) - (M, 1, d) = (M, N, d)
-        D = np.linalg.norm(diff, axis=2)
-        I = np.argpartition(D, kth=k - 1)[:, :k]
+        D = np.dot(query, self.database.T) 
+        I = np.argpartition(-D, kth=k - 1)[:, :k]
         return D[np.arange(len(query))[:, None], I], I
