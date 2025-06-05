@@ -14,6 +14,7 @@ class IndexFlatL2:
 
     def search(self, query, k: int):
         k = min(k, len(self.vectors))
+        query = np.asarray(query)
 
         if query.ndim == 1:
             query = query[None, :]

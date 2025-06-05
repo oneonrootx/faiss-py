@@ -1,11 +1,16 @@
 import numpy as np
 
+from faiss_py.indexflatl2 import IndexFlatL2
+
+
+
 class Kmeans:
 
     def __init__(self, d: int, k: int):
         self.d = d
         self.k = k
         self.centroids = None
+        self.index = None
     
     def train(self, x, weights = None, init_centroids = None, niter: int = 100, nrounds: int = 20, seed: int  = None):
         """
@@ -33,7 +38,7 @@ class Kmeans:
 
         TODO:
         -------
-        - [ ] create `IndexFlatL2` from centroids
+        - [x] create `IndexFlatL2` from centroids
         - [ ] use weights
         """
         if seed: np.random.seed(seed)
@@ -84,7 +89,8 @@ class Kmeans:
 
         # 6. update state, assign centroids and create index
         self.centroids = centroids
-        # self.index = ... TODO: add centroids to an index after `IndexFlatL2`
+        self.index = IndexFlatL2(self.d)
+        self.index.add(centroids)
 
         # 7. return labels with lowest total variance
         soln = soln_candidates[np.argmin([var for var, _ in soln_candidates])]
