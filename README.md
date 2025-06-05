@@ -19,7 +19,7 @@ ___
 ### Basic Indexes
 
 - [x] `IndexFlatL2` - Exact search for L2
-- [ ] `IndexFlatIP` - Exact search for inner product
+- [x] `IndexFlatIP` - Exact search for inner product
 - [ ] `IndexHNSWFlat` - Hierarchical Navigable Small World graph exploration
 - [ ] `IndexIVFFlat` - Inverted file with exact post-verification
 - [ ] `IndexLSH` - Locality-Sensitive Hashing (binary flat index)
