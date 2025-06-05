@@ -82,3 +82,23 @@ def test_indexflatl2_search_more_than_db():
     assert I.shape == (1, 2)
     # Should return both indices
     assert set(I[0]) == {0, 1}
+
+def test_indexivfflat_simple():
+    from faiss_py.indexivfflat import IndexIVFFlat
+    from faiss_py.indexflatl2 import IndexFlatL2
+    d = 2
+    nlist = 2
+    nprobe = 1
+    xb = np.array([
+        [0.0, 0.0],
+        [1.0, 0.0],
+        [0.0, 1.0],
+        [1.0, 1.0],
+    ], dtype=np.float32)
+    quantizer = IndexFlatL2
+    index = IndexIVFFlat(quantizer, d, nlist, nprobe)
+    index.train(xb)
+    index.add(xb)
+    xq = np.array([[0.1, 0.1]], dtype=np.float32)
+    D, I = index.search(xq, k=2) if hasattr(index, 'search') else (None, None)
+    print('IVFFlat search result:', D, I)

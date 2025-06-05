@@ -31,6 +31,7 @@ class Index(ABC):
         """
         ...
 
+    @abstractmethod
     def search(self, query: npt.NDArray[np.float32], k: int):
         """
         Search the index for the k nearest neighbors of the query vector(s).

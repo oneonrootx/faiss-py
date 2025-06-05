@@ -21,7 +21,7 @@ ___
 - [x] `IndexFlatL2` - Exact search for L2
 - [x] `IndexFlatIP` - Exact search for inner product
 - [ ] `IndexHNSWFlat` - Hierarchical Navigable Small World graph exploration
-- [ ] `IndexIVFFlat` - Inverted file with exact post-verification
+- [x] `IndexIVFFlat` - Inverted file with exact post-verification
 - [ ] `IndexLSH` - Locality-Sensitive Hashing (binary flat index)
 - [ ] `IndexScalarQuantizer` - Scalar quantizer (SQ) in flat mode
 - [ ] `IndexPQ` - Product quantizer (PQ) in flat mode

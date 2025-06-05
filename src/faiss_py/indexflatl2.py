@@ -74,6 +74,13 @@ class IndexFlatL2(Index):
             query = query[None, :]
 
         diff = self.database[None, :, :] - query[:, None, :] # (1, N, d) - (M, 1, d) = (M, N, d)
-        D = np.linalg.norm(diff, axis=2)
-        I = np.argpartition(D, kth=k - 1)[:, :k]
-        return D[np.arange(len(query))[:, None], I], I
+        Dall = np.linalg.norm(diff, axis=2)
+        
+        Iunsorted = np.argpartition(Dall, kth=k - 1)[:, :k]
+        Dunsorted = Dall[np.arange(len(query))[:, None], Iunsorted]
+
+        order = np.argsort(Dunsorted, axis=1)
+        I = np.take_along_axis(Iunsorted, order, axis=1)
+        D = np.take_along_axis(Dunsorted, order, axis=1)
+
+        return D, I

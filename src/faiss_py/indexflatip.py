@@ -74,6 +74,13 @@ class IndexFlatIP(Index):
         if query.ndim == 1:
             query = query[None, :]
 
-        D = np.dot(query, self.database.T) 
-        I = np.argpartition(-D, kth=k - 1)[:, :k]
-        return D[np.arange(len(query))[:, None], I], I
+        Dall = np.dot(query, self.database.T)
+        
+        Iunsorted = np.argpartition(-Dall, kth=k - 1)[:, :k]
+        Dunsorted = Dall[np.arange(len(query))[:, None], Iunsorted]
+
+        order = np.argsort(-Dunsorted, axis=1)
+        I = np.take_along_axis(Iunsorted, order, axis=1)
+        D = np.take_along_axis(Dunsorted, order, axis=1)
+
+        return D, I

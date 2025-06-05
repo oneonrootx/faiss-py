@@ -11,6 +11,7 @@ class Kmeans:
         self.k = k
         self.centroids = None
         self.index = None
+        self.labels = None
     
     def train(self, x, weights = None, init_centroids = None, niter: int = 100, nrounds: int = 20, seed: int  = None):
         """
@@ -74,7 +75,8 @@ class Kmeans:
 
                 # 4. get the new centroids
                 centroids = [
-                    x[labels == i].mean(axis=0) if np.any(labels == i) else x[np.random.choice(len(x))] for i in range(self.k)
+                    x[labels == i].mean(axis=0) if np.any(labels == i) else x[np.random.choice(len(x))] 
+                    for i in range(self.k)
                 ]
 
                 prev_labels = labels
@@ -89,6 +91,7 @@ class Kmeans:
 
         # 6. update state, assign centroids and create index
         self.centroids = centroids
+        self.labels = labels
         self.index = IndexFlatL2(self.d)
         self.index.add(centroids)
 
