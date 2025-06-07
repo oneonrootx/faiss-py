@@ -28,3 +28,8 @@ ___
 - [ ] `IndexIVFScalarQuantizer` - IVF and scalar quantizer
 - [ ] `IndexIVFPQ` - IVFADC (coarse quantizer + PQ on residuals)
 - [ ] `IndexIVFPQR` - IVFADC+R (same as IVFADC with re-ranking based on codes)
+
+### To do
+
+- [ ] Vectorize `IndexIVFFlat.search`, in a moment of weakness I just implemented it with loops. 
+- [ ] Write `README.md` for `HNSW`
