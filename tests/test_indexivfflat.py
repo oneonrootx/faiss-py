@@ -1,8 +1,8 @@
 import numpy as np
 from faiss_py.helpers.make_blobs import make_blobs
-from faiss_py.indexivfflat.indexivfflat import IndexIVFFlat
-from faiss_py.indexflatl2.indexflatl2 import IndexFlatL2
-from faiss_py.indexflatip.indexflatip import IndexFlatIP
+from faiss_py.indexivfflat import IndexIVFFlat
+from faiss_py.indexflatl2 import IndexFlatL2
+from faiss_py.indexflatip import IndexFlatIP
 
 def test_indexivfflat_simple():
     d = 4

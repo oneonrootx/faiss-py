@@ -1,5 +1,6 @@
 import numpy as np
-
+from tqdm import tqdm
+from faiss_py import logger
 from faiss_py.core.index import Index
 
 class IndexFlatL2(Index):
@@ -10,7 +11,7 @@ class IndexFlatL2(Index):
     for nearest neighbors using L2 distance.
     """
 
-    def __init__(self, d: int):
+    def __init__(self, d: int, verbose: bool = False):
         """
         Initialize the index.
 
@@ -18,9 +19,14 @@ class IndexFlatL2(Index):
         ----------
         d : int
             Dimensionality of the vectors to be stored.
+        verbose : bool, optional
+            Enable verbose logging. Defaults to False.
         """
         super().__init__(d)
+        self.verbose = verbose
         self.database = np.empty((0, d), dtype=np.float32)
+        if self.verbose:
+            logger.info("Initialized IndexFlatL2 with d=%d", d)
 
     def train(self, vectors):
         """
@@ -47,7 +53,11 @@ class IndexFlatL2(Index):
         vectors : np.ndarray
             Array of shape (n, d) containing the vectors to add.
         """
+        if self.verbose:
+            logger.info("Adding %d vectors to IndexFlatL2", len(vectors))
         self.database = np.concatenate((self.database, vectors), axis=0)
+        if self.verbose:
+            logger.info("Database now contains %d vectors", len(self.database))
 
     def search(self, query, k: int):
         """
@@ -73,6 +83,10 @@ class IndexFlatL2(Index):
         if query.ndim == 1:
             query = query[None, :]
 
+        if self.verbose:
+            logger.info("Searching %d queries for k=%d neighbors in database of %d vectors", 
+                       len(query), k, len(self.database))
+
         diff = self.database[None, :, :] - query[:, None, :] # (1, N, d) - (M, 1, d) = (M, N, d)
         Dall = np.linalg.norm(diff, axis=2)
         
@@ -82,5 +96,8 @@ class IndexFlatL2(Index):
         order = np.argsort(Dunsorted, axis=1)
         I = np.take_along_axis(Iunsorted, order, axis=1)
         D = np.take_along_axis(Dunsorted, order, axis=1)
+
+        if self.verbose:
+            logger.info("Search completed, found %d results per query", I.shape[1])
 
         return D, I

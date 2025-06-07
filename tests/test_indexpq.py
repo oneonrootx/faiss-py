@@ -1,8 +1,8 @@
 
 import numpy as np
 from faiss_py.helpers.make_blobs import make_blobs
-from faiss_py.indexflatl2.indexflatl2 import IndexFlatL2
-from faiss_py.indexpq.indexpq import IndexPQ
+from faiss_py.indexflatl2 import IndexFlatL2
+from faiss_py.indexpq import IndexPQ
 
 
 
@@ -18,10 +18,10 @@ def test_indexpq_search():
     tindex = IndexFlatL2(d)
     tindex.add(xb)
 
-    _, It = tindex.search(xq, k=7)
-
+    _, Itest = tindex.search(xq, k=7)
     _, I = index.search(xq, k=7)
-    print(I, It)
+
+    # assert sets of indexes overlap to some extent
 
 
 

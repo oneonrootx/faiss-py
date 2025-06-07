@@ -1,7 +1,7 @@
 import numpy as np
 from tqdm import tqdm
-
-from faiss_py.indexflatl2.indexflatl2 import IndexFlatL2
+from faiss_py import logger
+from faiss_py.indexflatl2 import IndexFlatL2
 
 
 class Kmeans:
@@ -34,6 +34,9 @@ class Kmeans:
         self.centroids = None
         self.index = None
         self.labels = None
+        
+        if self.verbose:
+            logger.info("Initialized Kmeans with d=%d, k=%d", d, k)
 
     def _initialize_centroids_kmeans_pp(self, x, seed=None):
         """
@@ -108,6 +111,9 @@ class Kmeans:
         if weights is not None:
             raise NotImplementedError("`weights` argument has not been implemented for Kmeans.")
 
+        if self.verbose:
+            logger.info("Training Kmeans on %d vectors with niter=%d, nrounds=%d", len(x), niter, nrounds)
+
         soln_candidates = []
 
         rounds = 1 if init_centroids is not None else nrounds
@@ -160,7 +166,10 @@ class Kmeans:
 
         self.centroids = best_centroids
         self.labels = best_labels
-        self.index = IndexFlatL2(self.d)
+        self.index = IndexFlatL2(self.d, verbose=False)
         self.index.add(self.centroids)
+
+        if self.verbose:
+            logger.info("Kmeans training completed, best WCSS: %.6f", best_wcss)
 
         return self.labels

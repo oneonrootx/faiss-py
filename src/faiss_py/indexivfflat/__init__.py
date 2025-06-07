@@ -1,0 +1,1 @@
+from .indexivfflat import IndexIVFFlat # noqa

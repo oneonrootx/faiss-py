@@ -1,0 +1,1 @@
+from .indexpq import IndexPQ # noqa

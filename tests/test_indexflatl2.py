@@ -1,5 +1,5 @@
 import numpy as np
-from faiss_py.indexflatl2.indexflatl2 import IndexFlatL2
+from faiss_py.indexflatl2 import IndexFlatL2
 
 def test_indexflatl2_add_and_search():
     d = 4

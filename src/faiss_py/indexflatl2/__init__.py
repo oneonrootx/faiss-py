@@ -1,0 +1,1 @@
+from .indexflatl2 import IndexFlatL2 # noqa

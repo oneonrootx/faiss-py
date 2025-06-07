@@ -1,8 +1,8 @@
-import itertools
 import numpy as np
-
+from tqdm import tqdm
+from faiss_py import logger
 from faiss_py.core.index import Index
-from faiss_py.kmeans.kmeans import Kmeans
+from faiss_py.kmeans import Kmeans
 
 
 class IndexIVFFlat(Index):
@@ -14,7 +14,7 @@ class IndexIVFFlat(Index):
     closest `nprobe` cells are searched using a flat index (L2 or IP).
     """
 
-    def __init__(self, quantizer: type[Index], d: int, nlist: int, nprobe: int):
+    def __init__(self, quantizer: type[Index], d: int, nlist: int, nprobe: int, verbose: bool = False):
         """
         Initialize the IVFFlat index.
 
@@ -28,15 +28,21 @@ class IndexIVFFlat(Index):
             Number of cells (clusters) to partition the space into.
         nprobe : int
             Number of cells to probe during search.
+        verbose : bool, optional
+            Enable verbose logging. Defaults to False.
         """
         super().__init__(d)
         self.quantizer = quantizer
         self.nlist = nlist
         self.nprobe = nprobe
+        self.verbose = verbose
         self.database = np.empty((0, d), dtype=np.float32)
         
         self.cell_index = None
         self.cells = None
+        
+        if self.verbose:
+            logger.info("Initialized IndexIVFFlat with d=%d, nlist=%d, nprobe=%d", d, nlist, nprobe)
 
     def train(self, vectors):
         """
@@ -47,31 +53,28 @@ class IndexIVFFlat(Index):
         vectors : np.ndarray
             Training vectors of shape (N, d).
         """
-        kmeans = Kmeans(self.d, k=self.nlist)
+        if self.verbose:
+            logger.info("Training IndexIVFFlat with %d vectors", len(vectors))
+        
+        kmeans = Kmeans(self.d, k=self.nlist, verbose=self.verbose)
         kmeans.train(vectors)
         self.cell_index = kmeans.index
 
         labels = kmeans.labels  # shape (N,)
         self.cells = {}
 
-        for cell in np.unique(labels):
+        if self.verbose:
+            logger.info("Assigning vectors to %d cells", self.nlist)
+
+        for cell in tqdm(np.unique(labels), desc="Assigning to cells", disable=not self.verbose):
             mask = labels == cell
             self.cells[cell] = {
                 "vectors": vectors[mask],
                 "indices": np.nonzero(mask)[0]  # global positions in original `vectors`
             }
-
-    def add(self, vectors):
-        """
-        Add vectors to the database.
-
-        Parameters
-        ----------
-        vectors : np.ndarray
-            Vectors to add, shape (n, d).
-        """
-        self.database = np.concatenate((self.database, vectors))
-
+        
+        if self.verbose:
+            logger.info("Training completed, created %d cells", len(self.cells))
 
     def add(self, vectors):
         """
@@ -82,7 +85,11 @@ class IndexIVFFlat(Index):
         vectors : np.ndarray
             Vectors to add, shape (n, d).
         """
+        if self.verbose:
+            logger.info("Adding %d vectors to IndexIVFFlat database", len(vectors))
         self.database = np.concatenate((self.database, vectors))
+        if self.verbose:
+            logger.info("Database now contains %d vectors", len(self.database))
 
 
     def search(self, query, k: int):
@@ -103,13 +110,21 @@ class IndexIVFFlat(Index):
         I : np.ndarray
             Array of shape (m, k) with the indices of the nearest neighbors in the original database.
         """
+        query = np.asarray(query)
+        if query.ndim == 1:
+            query = query[None, :]
+
+        if self.verbose:
+            logger.info("Searching %d queries for k=%d neighbors using nprobe=%d", 
+                       len(query), k, self.nprobe)
 
         # 1. Get top-nprobe cell IDs for each query
         _, I = self.cell_index.search(query, k=self.nprobe)
         
         Dout, Iout = [], []
 
-        for Iq, q in zip(I, query):
+        search_iterator = tqdm(zip(I, query), total=len(query), desc="Searching queries", disable=not self.verbose)
+        for Iq, q in search_iterator:
             # 2. Collect all vectors and their original indices from the selected cells
             filtered_vectors = []
             filtered_indices = []
@@ -124,7 +139,7 @@ class IndexIVFFlat(Index):
             filtered_indices = np.concatenate(filtered_indices, axis=0)
 
             # 4. Build temporary index over filtered vectors
-            index: Index = self.quantizer(self.d)
+            index: Index = self.quantizer(self.d, verbose=False)
             index.add(filtered_vectors)
 
             # 5. Run search over local filtered database
@@ -138,6 +153,9 @@ class IndexIVFFlat(Index):
             # 7. Append results
             Dout.append(Dtemp)
             Iout.append(Itemp_global)
+
+        if self.verbose:
+            logger.info("IndexIVFFlat search completed, found %d results per query", len(Iout[0]) if Iout else 0)
 
         return np.array(Dout), np.array(Iout)
 

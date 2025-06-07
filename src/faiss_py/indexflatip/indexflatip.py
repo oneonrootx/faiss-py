@@ -1,5 +1,6 @@
 import numpy as np
-
+from tqdm import tqdm
+from faiss_py import logger
 from faiss_py.core.index import Index
 
 
@@ -11,7 +12,7 @@ class IndexFlatIP(Index):
     for nearest neighbors using inner product similarity.
     """
 
-    def __init__(self, d: int):
+    def __init__(self, d: int, verbose: bool = False):
         """
         Initialize the index.
 
@@ -19,9 +20,14 @@ class IndexFlatIP(Index):
         ----------
         d : int
             Dimensionality of the vectors to be stored.
+        verbose : bool, optional
+            Enable verbose logging. Defaults to False.
         """
         super().__init__(d)
+        self.verbose = verbose
         self.database = np.empty((0, d), dtype=np.float32)
+        if self.verbose:
+            logger.info("Initialized IndexFlatIP with d=%d", d)
 
     def train(self, vectors):
         """
@@ -48,7 +54,11 @@ class IndexFlatIP(Index):
         vectors : np.ndarray
             Vectors to add, shape (n, d).
         """
+        if self.verbose:
+            logger.info("Adding %d vectors to IndexFlatIP", len(vectors))
         self.database = np.concatenate((self.database, vectors), axis=0)
+        if self.verbose:
+            logger.info("Database now contains %d vectors", len(self.database))
 
     def search(self, query, k: int):
         """
@@ -74,6 +84,10 @@ class IndexFlatIP(Index):
         if query.ndim == 1:
             query = query[None, :]
 
+        if self.verbose:
+            logger.info("Searching %d queries for k=%d neighbors in database of %d vectors", 
+                       len(query), k, len(self.database))
+
         Dall = np.dot(query, self.database.T)
         
         Iunsorted = np.argpartition(-Dall, kth=k - 1)[:, :k]
@@ -82,5 +96,8 @@ class IndexFlatIP(Index):
         order = np.argsort(-Dunsorted, axis=1)
         I = np.take_along_axis(Iunsorted, order, axis=1)
         D = np.take_along_axis(Dunsorted, order, axis=1)
+
+        if self.verbose:
+            logger.info("Search completed, found %d results per query", I.shape[1])
 
         return D, I

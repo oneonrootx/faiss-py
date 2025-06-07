@@ -1,0 +1,1 @@
+from .indexflatip import IndexFlatIP # noqa

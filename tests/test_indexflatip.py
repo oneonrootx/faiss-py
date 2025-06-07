@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from faiss_py.indexflatip.indexflatip import IndexFlatIP
+from faiss_py.indexflatip import IndexFlatIP
 
 def test_indexflatip_add_and_search_basic():
     d = 4

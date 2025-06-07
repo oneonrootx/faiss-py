@@ -1,6 +1,7 @@
 import itertools
 from faiss_py.core.index import Index
-from faiss_py.kmeans.kmeans import Kmeans
+from faiss_py.kmeans import Kmeans
+from faiss_py import logger
 
 import numpy as np
 from tqdm import tqdm
@@ -46,6 +47,9 @@ class IndexPQ(Index):
         self.codebooks = None
         self.codebook_centoids = None
         self.database = np.empty((0, self.S), dtype=np.int16)
+        
+        if self.verbose:
+            logger.info("Initialized IndexPQ with d=%d, M=%d, S=%d, nbits=%d", d, M, self.S, nbits)
 
 
     def train(self, vectors):
@@ -55,15 +59,22 @@ class IndexPQ(Index):
         Args:
             vectors (np.ndarray): Training vectors of shape (N, d).
         """
+        if self.verbose:
+            logger.info("Training IndexPQ with %d vectors", len(vectors))
+        
         subvectors = vectors.reshape(vectors.shape[0], -1, self.M)
         subspaces = subvectors.transpose(1, 0, 2)
         self.codebooks = {}
         self.codebook_centoids = {}
+        
         for subspace_idx, subspace in tqdm(enumerate(subspaces), total=len(subspaces), desc="Building Codebooks", disable=not self.verbose):
-            kmeans = Kmeans(d=self.M, k=self.nbits)
+            kmeans = Kmeans(d=self.M, k=self.nbits, verbose=False)
             kmeans.train(subspace)
             self.codebooks[subspace_idx] = kmeans.index
             self.codebook_centoids[subspace_idx] = kmeans.centroids
+        
+        if self.verbose:
+            logger.info("Training completed, built %d codebooks", len(self.codebooks))
 
     def encode(self, vector):
         """
@@ -121,7 +132,11 @@ class IndexPQ(Index):
         Args:
             vectors (np.ndarray): Vectors to add, shape (N, d).
         """
+        if self.verbose:
+            logger.info("Adding %d vectors to IndexPQ database", len(vectors))
         self.database = np.concatenate((self.database, self.encode(vectors)), axis=0)
+        if self.verbose:
+            logger.info("Database now contains %d encoded vectors", len(self.database))
     
     def search(self, query, k: int):
         """
@@ -141,6 +156,10 @@ class IndexPQ(Index):
 
         if query.ndim == 1:
             query = query[None, :] # (Nq, d)
+        
+        if self.verbose:
+            logger.info("Searching %d queries for k=%d neighbors in IndexPQ database of %d vectors", 
+                       len(query), k, len(self.database))
 
         query_split = query.reshape(query.shape[0], -1, self.M) # (Nq, S, M)
 
@@ -181,6 +200,9 @@ class IndexPQ(Index):
         sorted_order = np.argsort(D, axis=1)
         I_sorted = I[query_indices, sorted_order]
         D_sorted = D[query_indices, sorted_order]
+
+        if self.verbose:
+            logger.info("IndexPQ search completed, found %d results per query", I_sorted.shape[1])
 
         return D_sorted, I_sorted
 
