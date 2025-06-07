@@ -24,7 +24,7 @@ ___
 - [x] `IndexIVFFlat` - Inverted file with exact post-verification
 - [ ] `IndexLSH` - Locality-Sensitive Hashing (binary flat index)
 - [ ] `IndexScalarQuantizer` - Scalar quantizer (SQ) in flat mode
-- [ ] `IndexPQ` - Product quantizer (PQ) in flat mode
+- [x] `IndexPQ` - Product quantizer (PQ) in flat mode
 - [ ] `IndexIVFScalarQuantizer` - IVF and scalar quantizer
 - [ ] `IndexIVFPQ` - IVFADC (coarse quantizer + PQ on residuals)
 - [ ] `IndexIVFPQR` - IVFADC+R (same as IVFADC with re-ranking based on codes)
