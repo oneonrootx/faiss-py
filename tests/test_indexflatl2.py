@@ -1,5 +1,5 @@
 import numpy as np
-from faiss_py.indexflatl2 import IndexFlatL2
+from faiss_py.indexflatl2.indexflatl2 import IndexFlatL2
 
 def test_indexflatl2_add_and_search():
     d = 4
@@ -84,8 +84,8 @@ def test_indexflatl2_search_more_than_db():
     assert set(I[0]) == {0, 1}
 
 def test_indexivfflat_simple():
-    from faiss_py.indexivfflat import IndexIVFFlat
-    from faiss_py.indexflatl2 import IndexFlatL2
+    from faiss_py.indexivfflat.indexivfflat import IndexIVFFlat
+    from faiss_py.indexflatl2.indexflatl2 import IndexFlatL2
     d = 2
     nlist = 2
     nprobe = 1

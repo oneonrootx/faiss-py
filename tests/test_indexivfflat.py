@@ -1,8 +1,8 @@
 import numpy as np
 from faiss_py.helpers.make_blobs import make_blobs
-from faiss_py.indexivfflat import IndexIVFFlat
-from faiss_py.indexflatl2 import IndexFlatL2
-from faiss_py.indexflatip import IndexFlatIP
+from faiss_py.indexivfflat.indexivfflat import IndexIVFFlat
+from faiss_py.indexflatl2.indexflatl2 import IndexFlatL2
+from faiss_py.indexflatip.indexflatip import IndexFlatIP
 
 def test_indexivfflat_simple():
     d = 4
@@ -149,7 +149,7 @@ def test_indexivfflat_with_ip_quantizer_blob():
         assert I[i, 0] == i
 
 def test_indexivfflat_search_after_multiple_adds_and_quantizers():
-    d = 3
+    d = 5
     nlist = 2
     nprobe = 2
     xb = np.random.randn(10, d).astype(np.float32)

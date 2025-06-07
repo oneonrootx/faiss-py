@@ -1,6 +1,8 @@
 import numpy as np
+from tqdm import tqdm
 
-from faiss_py.indexflatl2 import IndexFlatL2
+from faiss_py.indexflatl2.indexflatl2 import IndexFlatL2
+
 
 
 
@@ -32,9 +34,10 @@ class Kmeans:
         Trains the K-means model on the input data.
     """
 
-    def __init__(self, d: int, k: int):
+    def __init__(self, d: int, k: int, verbose: bool = False):
         self.d = d
         self.k = k
+        self.verbose = verbose
         self.centroids = None
         self.index = None
         self.labels = None
@@ -80,7 +83,7 @@ class Kmeans:
         # 0. initialise solution candidates
         soln_candidates = []
 
-        for _ in range(nrounds if init_centroids is None else 1):
+        for _ in tqdm(range(nrounds if init_centroids is None else 1), desc="KMeans rounds", disable=not self.verbose):
             
             # 1. choose k random points
             centroids = init_centroids if init_centroids is not None else x[np.random.choice(np.arange(len(x)), size=self.k)]
