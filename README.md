@@ -32,4 +32,4 @@ ___
 ### To do
 
 - [ ] Vectorize `IndexIVFFlat.search`, in a moment of weakness I just implemented it with loops. 
-- [ ] Write `README.md` for `HNSW`
+- [x] Write `README.md` for `HNSW`
