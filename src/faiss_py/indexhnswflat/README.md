@@ -56,10 +56,7 @@ while True:
 
 This is a very basic greedy graph traversal algorithm. What's wrong with it? I like to always start a problem like this by thinking about how I would attack this problem. Personally, I would think `How do I get to Edinburgh` and then once in Edinburgh, I'd ask myself how do I get to `New Town` and then how do I get to `Princess Street` and then only once I'm on  `Princess Street` would I look at the street numbers and find where `1 Princess Street` is. I certainly would't think, which of the houses on `Downing Street` are closest to `1 Princess Street`? Better go there first!
 
-So, what can we do? 
-
-Absolutely — here's a continuation of your metaphor that introduces the concept of **hierarchical layers** in HNSW using the idea of **progressively more detailed maps**, with **random selection** of nodes for higher layers:
-
+### So, what can we do? 
 
 Now, imagine instead of relying on just one giant map with every address in the UK, we have **a series of maps at different resolutions**:
 
