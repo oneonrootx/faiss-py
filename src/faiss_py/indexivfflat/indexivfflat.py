@@ -11,7 +11,7 @@ class IndexIVFFlat(Index):
 
     This index partitions the vector space into `nlist` cells using a quantizer (e.g., KMeans).
     Each cell contains a subset of the database vectors. During search, only the vectors in the
-    closest `nprobe` cells are searched using a flat index (L2 or IP).
+    closest `nprobe` cells are searched using a flat index p(L2 or IP).
     """
 
     def __init__(self, quantizer: type[Index], d: int, nlist: int, nprobe: int, verbose: bool = False):

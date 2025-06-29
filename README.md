@@ -13,6 +13,7 @@ ___
 ### Faiss building blocks
 
 - [x] `Kmeans` - Clustering
+- [x] `Graph` - With support for Vector Nodes
 - [ ] `PCAMatrix` - Dimensionality Reduction
 - [ ] `Quantizer` - Quantization
 

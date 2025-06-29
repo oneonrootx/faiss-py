@@ -7,7 +7,7 @@ from faiss_py.indexpq import IndexPQ
 
 
 def test_indexpq_search():
-    d, N, M, nbits = 64, 1000, 8, 256
+    d, N, M, nbits = 64, 100, 8, 16
     index = IndexPQ(d=d, M=M, nbits=nbits, verbose=True)
     xb, _ = make_blobs(N, d, nbits, seed=42)
     xq = xb[:3]

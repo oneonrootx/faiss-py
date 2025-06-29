@@ -55,6 +55,7 @@ class IndexFlatL2(Index):
         """
         if self.verbose:
             logger.info("Adding %d vectors to IndexFlatL2", len(vectors))
+        vectors = np.asarray(vectors)
         self.database = np.concatenate((self.database, vectors), axis=0)
         if self.verbose:
             logger.info("Database now contains %d vectors", len(self.database))

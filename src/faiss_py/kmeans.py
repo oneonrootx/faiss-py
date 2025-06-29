@@ -1,7 +1,7 @@
 import numpy as np
 from tqdm import tqdm
 
-from faiss_py.indexflatl2.indexflatl2 import IndexFlatL2
+from faiss_py.indexflatl2 import IndexFlatL2
 
 
 
